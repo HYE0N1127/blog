@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { BookOpen, LogOut } from "lucide-react";
+import { FaGithub } from "react-icons/fa6";
 import { createClient } from "@/utils/supabase/server";
-import { signInWithGithub, signOut } from "@/actions/auth";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { signInWithGithub } from "@/actions/auth";
+import { Button } from "@/components/ui/button";
+import ProfileDropdown from "./dropdown/index";
 
 const Header = async () => {
   const supabase = await createClient();
@@ -11,57 +11,46 @@ const Header = async () => {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // GitHub에서 받아온 유저 메타데이터 추출
   const avatarUrl = user?.user_metadata?.avatar_url;
   const userName =
     user?.user_metadata?.full_name || user?.user_metadata?.user_name || "User";
-  const fallbackText = userName.substring(0, 2).toUpperCase();
+  const userHandle = user?.user_metadata?.user_name
+    ? `@${user.user_metadata.user_name}`
+    : userName;
+  const fallback = userName.substring(0, 2).toUpperCase();
+
+  const isAdmin = user?.email === process.env.ADMIN_EMAIL;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto flex h-14 max-w-[1260px] items-center justify-between px-4 sm:px-6">
-        {/* Logo Section */}
+    <header className="sticky top-0 z-50 w-full border-b border-blog-border bg-blog-bg/80 backdrop-blur supports-backdrop-filter:bg-blog-bg/60 transition-colors">
+      <div className="mx-auto flex h-13 max-w-275 items-center justify-between px-8">
+        {/* 로고 */}
         <Link
           href="/"
-          className="flex items-center gap-2 transition-opacity hover:opacity-80"
+          className="text-sm font-bold tracking-tight text-blog-fg transition-colors hover:text-blog-fg-muted font-mono"
         >
-          <BookOpen className="h-5 w-5" />
-          <span className="font-bold tracking-tight">DevBlog</span>
+          dev<span className="text-blog-fg-subtle">_</span>blog
         </Link>
 
-        {/* Auth Section */}
-        <div className="flex items-center gap-3">
+        {/* Auth */}
+        <div className="flex items-center gap-2">
           {user ? (
-            <>
-              <Link
-                href="/profile"
-                className="hidden sm:flex transition-opacity hover:opacity-80 rounded-full ring-2 ring-transparent hover:ring-border"
-              >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={avatarUrl} alt={`${userName}의 프로필`} />
-                  <AvatarFallback className="text-xs bg-primary/10">
-                    {fallbackText}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="sr-only">프로필</span>
-              </Link>
-
-              <form action={signOut}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  type="submit"
-                  className="gap-2"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span className="hidden sm:inline">로그아웃</span>
-                </Button>
-              </form>
-            </>
+            <ProfileDropdown
+              avatarUrl={avatarUrl}
+              userHandle={userHandle}
+              fallback={fallback}
+              isAdmin={isAdmin}
+            />
           ) : (
             <form action={signInWithGithub}>
-              <Button size="sm" type="submit" className="gap-2">
-                <span className="hidden sm:inline">로그인</span>
+              <Button
+                size="sm"
+                type="submit"
+                variant="outline"
+                className="h-8 gap-1.5 border-blog-border-muted bg-blog-bg text-blog-fg-muted text-[11px] tracking-wider font-semibold font-mono hover:bg-blog-bg-4 hover:text-blog-fg hover:border-blog-border-strong transition-colors"
+              >
+                <FaGithub className="h-3.5 w-3.5" />
+                로그인
               </Button>
             </form>
           )}
