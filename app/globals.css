@@ -5,6 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* ── 기존 shadcn 토큰 (수정 없음) ── */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
@@ -46,9 +47,27 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* ── 블로그 전용 토큰 ── */
+  /* 배경:   bg-blog-bg    bg-blog-bg-2    bg-blog-bg-3    bg-blog-bg-4    */
+  --color-blog-bg: var(--blog-bg);
+  --color-blog-bg-2: var(--blog-bg-2);
+  --color-blog-bg-3: var(--blog-bg-3);
+  --color-blog-bg-4: var(--blog-bg-4);
+
+  /* 텍스트: text-blog-fg  text-blog-fg-muted  text-blog-fg-subtle         */
+  --color-blog-fg: var(--blog-fg);
+  --color-blog-fg-muted: var(--blog-fg-muted);
+  --color-blog-fg-subtle: var(--blog-fg-subtle);
+
+  /* 테두리: border-blog-border  border-blog-border-muted  border-blog-border-strong */
+  --color-blog-border: var(--blog-border);
+  --color-blog-border-muted: var(--blog-border-muted);
+  --color-blog-border-strong: var(--blog-border-strong);
 }
 
 :root {
+  /* ── 기존 shadcn 토큰 (수정 없음) ── */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -81,9 +100,22 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* ── Light Color ── */
+  --blog-bg: oklch(1 0 0); /* #ffffff  메인 배경 */
+  --blog-bg-2: oklch(1 0 0); /* #ffffff  카드 배경 */
+  --blog-bg-3: oklch(0.96 0 0); /* #f5f5f5  서브 배경/호버 */
+  --blog-bg-4: oklch(0.93 0 0); /* #ededed  눌린 상태 */
+  --blog-fg: oklch(0.145 0 0); /* #1a1a1a  기본 텍스트 */
+  --blog-fg-muted: oklch(0.46 0 0); /* #6b6b6b  보조 텍스트 */
+  --blog-fg-subtle: oklch(0.7 0 0); /* #a3a3a3  흐린 텍스트 */
+  --blog-border: oklch(0.91 0 0); /* #e8e8e8  기본 구분선 */
+  --blog-border-muted: oklch(0.85 0 0); /* #d6d6d6  중간 구분선 */
+  --blog-border-strong: oklch(0.75 0 0); /* #bfbfbf  강조 구분선 */
 }
 
 .dark {
+  /* ── 기존 shadcn 토큰 (수정 없음) ── */
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -115,16 +147,25 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* ── Dark Color ── */
+  --blog-bg: oklch(0.13 0 0); /* #0e0e0e  메인 배경 */
+  --blog-bg-2: oklch(0.175 0 0); /* #161616  카드 배경 */
+  --blog-bg-3: oklch(0.2 0 0); /* #1c1c1c  서브 배경/호버 */
+  --blog-bg-4: oklch(0.23 0 0); /* #242424  눌린 상태  */
+  --blog-fg: oklch(0.96 0 0); /* #efefef  기본 텍스트 */
+  --blog-fg-muted: oklch(0.59 0 0); /* #888888  보조 텍스트 */
+  --blog-fg-subtle: oklch(0.38 0 0); /* #444444  흐린 텍스트 */
+  --blog-border: oklch(0.22 0 0); /* #1f1f1f  기본 구분선 */
+  --blog-border-muted: oklch(0.27 0 0); /* #2a2a2a  중간 구분선 */
+  --blog-border-strong: oklch(0.32 0 0); /* #3a3a3a  강조 구분선 */
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+  html {
+    background-color: var(--blog-bg);
   }
   body {
-    @apply bg-background text-foreground;
-  }
-  html {
-    @apply font-sans;
+    @apply bg-blog-bg text-blog-fg;
   }
 }
