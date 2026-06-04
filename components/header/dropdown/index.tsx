@@ -56,7 +56,7 @@ const ProfileDropdown = ({
             <DropdownMenuSeparator className="bg-blog-border" />
             <DropdownMenuItem asChild>
               <Link
-                href="/write"
+                href="/editor"
                 className="cursor-pointer text-blog-fg-muted hover:text-blog-fg"
               >
                 새 글 작성
