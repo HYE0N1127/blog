@@ -44,22 +44,13 @@ const EditorForm = ({
   const [content, setContent] = useState<EditorState | undefined>(
     initialContent,
   );
-  const [editorVisible, setEditorVisible] = useState(true);
+  const [editorKey, setEditorKey] = useState(0);
 
   const handleRestoreFromDraft = useCallback((draft: Draft) => {
     setTitle(draft.title);
     setContent(draft.content);
-    setEditorVisible(false);
+    setEditorKey((key) => key + 1);
   }, []);
-
-  useEffect(() => {
-    if (editorVisible) {
-      return;
-    }
-
-    const id = setTimeout(() => setEditorVisible(true), 0);
-    return () => clearTimeout(id);
-  }, [editorVisible]);
 
   const { draftModal, saveToLocal, handleRestore, handleIgnore, clearDraft } =
     useDraft({ isNewPost, onRestore: handleRestoreFromDraft });
@@ -82,7 +73,7 @@ const EditorForm = ({
   useEffect(() => {
     if (initialContent === undefined) return;
     setContent(initialContent);
-    setEditorVisible(false); // 같은 방식으로 재마운트
+    setEditorKey((k) => k + 1);
   }, [initialContent]);
 
   // 언마운트 시 타이머 정리
@@ -141,9 +132,10 @@ const EditorForm = ({
           className="w-full bg-transparent text-3xl font-bold text-blog-fg placeholder:text-blog-fg-subtle outline-none border-b border-blog-border pb-4 font-mono"
         />
 
-        {/* 에디터 — editorVisible로 언마운트/마운트 제어 */}
-        {(!initialPostId || content !== undefined) && editorVisible ? (
+        {/* 에디터 — key로 재마운트 제어 */}
+        {!initialPostId || content !== undefined ? (
           <Editor
+            key={editorKey}
             initialData={content}
             onChange={(data) => {
               setContent(data);
