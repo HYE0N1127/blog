@@ -35,14 +35,25 @@ export const useDraft = ({ isNewPost, onRestore }: UseDraftProps) => {
   }, [isNewPost]);
 
   const saveToLocal = useCallback(
-    (title: string, content: EditorState | undefined) => {
-      if (!isNewPost) return;
+    (
+      title: string,
+      subtitle: string,
+      content: EditorState | undefined,
+      thumbnailUrl: string | undefined,
+    ) => {
+      if (!isNewPost) {
+        return;
+      }
+
       try {
         const data: Draft = {
           title,
+          subtitle,
           content,
+          thumbnailUrl,
           savedAt: new Date().toISOString(),
         };
+
         localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(data));
       } catch {}
     },

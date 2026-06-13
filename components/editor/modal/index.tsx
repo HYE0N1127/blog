@@ -4,7 +4,9 @@ import type { EditorState } from "@hyeon1127/text-editor-kit";
 
 export type Draft = {
   title: string;
+  subtitle: string;
   content?: EditorState;
+  thumbnailUrl?: string;
   savedAt: string;
 };
 

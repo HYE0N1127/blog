@@ -5,7 +5,9 @@ import dynamic from "next/dynamic";
 import type { EditorState } from "@hyeon1127/text-editor-kit";
 import DraftModal, { Draft } from "../modal/index";
 import { useDraft } from "@/hooks/draft/index";
-import { useEditorSave } from "@/hooks/editor/index";
+import { useEditorSave, STATUS_LABEL } from "@/hooks/editor/index";
+import { uploadArticleImage } from "@/utils/supabase/storage";
+import ThumbnailUpload from "../thumbnail/index";
 
 const Editor = dynamic(
   () => import("@hyeon1127/text-editor-kit").then((m) => m.Editor),
@@ -17,38 +19,38 @@ const Editor = dynamic(
   },
 );
 
-type SaveStatus = "idle" | "pending" | "saving" | "saved" | "error";
-
-const STATUS_LABEL: Record<SaveStatus, string> = {
-  idle: "",
-  pending: "변경됨",
-  saving: "저장 중...",
-  saved: "임시저장 완료",
-  error: "저장 실패",
-};
-
 type Props = {
   postId?: string;
   initialTitle?: string;
+  initialSubtitle?: string;
   initialContent?: EditorState;
+  initialThumbnailUrl?: string;
 };
 
 const EditorForm = ({
   postId: initialPostId,
   initialTitle = "",
+  initialSubtitle = "",
   initialContent,
+  initialThumbnailUrl,
 }: Props) => {
   const isNewPost = !initialPostId;
 
   const [title, setTitle] = useState(initialTitle);
+  const [subtitle, setSubtitle] = useState(initialSubtitle);
   const [content, setContent] = useState<EditorState | undefined>(
     initialContent,
+  );
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>(
+    initialThumbnailUrl,
   );
   const [editorKey, setEditorKey] = useState(0);
 
   const handleRestoreFromDraft = useCallback((draft: Draft) => {
     setTitle(draft.title);
+    setSubtitle(draft.subtitle);
     setContent(draft.content);
+    setThumbnailUrl(draft.thumbnailUrl);
     setEditorKey((key) => key + 1);
   }, []);
 
@@ -71,9 +73,12 @@ const EditorForm = ({
 
   // initialContent가 늦게 도착하는 경우 동기화 (편집 페이지)
   useEffect(() => {
-    if (initialContent === undefined) return;
+    if (initialContent === undefined) {
+      return;
+    }
+
     setContent(initialContent);
-    setEditorKey((k) => k + 1);
+    setEditorKey((key) => key + 1);
   }, [initialContent]);
 
   // 언마운트 시 타이머 정리
@@ -102,7 +107,9 @@ const EditorForm = ({
           <div className="flex items-center gap-2">
             {/* 수동 임시저장 */}
             <button
-              onClick={() => handleManualSave(title, content)}
+              onClick={() =>
+                handleManualSave(title, subtitle, content, thumbnailUrl)
+              }
               disabled={saveStatus === "saving" || !title.trim()}
               className="px-4 py-2 border border-blog-border-muted bg-blog-bg text-blog-fg-muted text-xs font-semibold font-mono rounded-md disabled:opacity-40 hover:bg-blog-bg-3 hover:text-blog-fg transition-colors cursor-pointer"
             >
@@ -111,7 +118,9 @@ const EditorForm = ({
 
             {/* 발행 */}
             <button
-              onClick={() => handlePublish(title, content)}
+              onClick={() =>
+                handlePublish(title, subtitle, content, thumbnailUrl)
+              }
               disabled={publishing || !title.trim()}
               className="px-5 py-2 bg-blog-fg text-blog-bg text-xs font-semibold font-mono rounded-md disabled:opacity-40 hover:opacity-80 transition-opacity cursor-pointer"
             >
@@ -126,10 +135,31 @@ const EditorForm = ({
           value={title}
           onChange={(e) => {
             setTitle(e.target.value);
-            triggerAutoSave(e.target.value, content);
+            triggerAutoSave(e.target.value, subtitle, content, thumbnailUrl);
           }}
           placeholder="제목을 입력하세요"
           className="w-full bg-transparent text-3xl font-bold text-blog-fg placeholder:text-blog-fg-subtle outline-none border-b border-blog-border pb-4 font-mono"
+        />
+
+        {/* 부제목 */}
+        <input
+          type="text"
+          value={subtitle}
+          onChange={(e) => {
+            setSubtitle(e.target.value);
+            triggerAutoSave(title, e.target.value, content, thumbnailUrl);
+          }}
+          placeholder="부제목을 입력하세요 (선택)"
+          className="w-full bg-transparent text-sm text-blog-fg-muted placeholder:text-blog-fg-subtle outline-none font-mono"
+        />
+
+        {/* 썸네일 업로드 */}
+        <ThumbnailUpload
+          value={thumbnailUrl}
+          onChange={(url) => {
+            setThumbnailUrl(url);
+            triggerAutoSave(title, subtitle, content, url);
+          }}
         />
 
         {/* 에디터 — key로 재마운트 제어 */}
@@ -139,8 +169,9 @@ const EditorForm = ({
             initialData={content}
             onChange={(data) => {
               setContent(data);
-              triggerAutoSave(title, data);
+              triggerAutoSave(title, subtitle, data, thumbnailUrl);
             }}
+            onImageUpload={uploadArticleImage}
           />
         ) : (
           <div className="h-96 rounded-lg bg-blog-bg-3 animate-pulse" />

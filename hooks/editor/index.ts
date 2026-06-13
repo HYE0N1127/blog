@@ -17,7 +17,12 @@ export const STATUS_LABEL: Record<SaveStatus, string> = {
 type UseEditorSaveProps = {
   postId?: string;
   isNewPost: boolean;
-  onSaveToLocal: (title: string, content: EditorState | undefined) => void;
+  onSaveToLocal: (
+    title: string,
+    subtitle: string,
+    content: EditorState | undefined,
+    thumbnailUrl: string | undefined,
+  ) => void;
   onClearDraft: () => void;
 };
 
@@ -31,13 +36,21 @@ export const useEditorSave = ({
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const save = useCallback(
-    async (title: string, content: EditorState | undefined, id?: string) => {
+    async (
+      title: string,
+      subtitle: string,
+      content: EditorState | undefined,
+      thumbnailUrl: string | undefined,
+      id?: string,
+    ) => {
       if (!id || !title.trim()) {
         return;
       }
+
       setSaveStatus("saving");
+
       try {
-        await updateArticle({ id, title: title, content: content });
+        await updateArticle({ id, title, subtitle, content, thumbnailUrl });
 
         setSaveStatus("saved");
         setTimeout(() => setSaveStatus("idle"), 3000);
@@ -49,26 +62,39 @@ export const useEditorSave = ({
   );
 
   const triggerAutoSave = useCallback(
-    (title: string, content: EditorState | undefined) => {
+    (
+      title: string,
+      subtitle: string,
+      content: EditorState | undefined,
+      thumbnailUrl: string | undefined,
+    ) => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
 
       setSaveStatus("pending");
-      onSaveToLocal(title, content);
+      onSaveToLocal(title, subtitle, content, thumbnailUrl);
 
-      timerRef.current = setTimeout(() => save(title, content, postId), 2000);
+      timerRef.current = setTimeout(
+        () => save(title, subtitle, content, thumbnailUrl, postId),
+        2000,
+      );
     },
     [save, onSaveToLocal, postId],
   );
 
   const handleManualSave = useCallback(
-    (title: string, content: EditorState | undefined) => {
+    (
+      title: string,
+      subtitle: string,
+      content: EditorState | undefined,
+      thumbnailUrl: string | undefined,
+    ) => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
 
-      onSaveToLocal(title, content);
+      onSaveToLocal(title, subtitle, content, thumbnailUrl);
       setSaveStatus("saved");
 
       setTimeout(() => setSaveStatus("idle"), 3000);
@@ -77,14 +103,27 @@ export const useEditorSave = ({
   );
 
   const handlePublish = useCallback(
-    async (title: string, content: EditorState | undefined) => {
+    async (
+      title: string,
+      subtitle: string,
+      content: EditorState | undefined,
+      thumbnailUrl: string | undefined,
+    ) => {
       setPublishing(true);
+
       try {
         onClearDraft();
+
         if (postId) {
-          await updateArticle({ id: postId, title, content });
+          await updateArticle({
+            id: postId,
+            title,
+            subtitle,
+            content,
+            thumbnailUrl,
+          });
         } else {
-          await publishArticle({ title, content });
+          await publishArticle({ title, subtitle, content, thumbnailUrl });
         }
       } finally {
         setPublishing(false);
@@ -94,7 +133,9 @@ export const useEditorSave = ({
   );
 
   const clearTimer = useCallback(() => {
-    if (timerRef.current) clearTimeout(timerRef.current);
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
   }, []);
 
   return {

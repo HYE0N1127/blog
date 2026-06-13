@@ -1,12 +1,15 @@
 "use server";
 
+import { DEFAULT_THUMBNAIL_URL } from "@/constants/thumbnail";
 import { createClient } from "@/utils/supabase/server";
 import type { EditorState } from "@hyeon1127/text-editor-kit";
 import { redirect } from "next/navigation";
 
 type Article = {
   title: string;
+  subtitle?: string;
   content?: EditorState;
+  thumbnailUrl?: string;
 };
 
 /**
@@ -19,13 +22,20 @@ type Article = {
 export const updateArticle = async ({
   id,
   title,
+  subtitle,
   content,
+  thumbnailUrl,
 }: { id: string } & Article) => {
   const supabase = await createClient();
 
   const { error } = await supabase
     .from("articles")
-    .update({ title, content })
+    .update({
+      title,
+      subtitle: subtitle || null,
+      content,
+      thumbnail_url: thumbnailUrl ?? DEFAULT_THUMBNAIL_URL,
+    })
     .eq("id", id);
 
   if (error != null) {
@@ -39,12 +49,23 @@ export const updateArticle = async ({
  * @param title: 작성한 아티클의 제목
  * @param content: 작성한 아티클의 내용
  */
-export const publishArticle = async ({ title, content }: Article) => {
+export const publishArticle = async ({
+  title,
+  subtitle,
+  content,
+  thumbnailUrl,
+}: Article) => {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("articles")
-    .insert({ title, content, status: "published" })
+    .insert({
+      title,
+      subtitle: subtitle || null,
+      content,
+      thumbnail_url: thumbnailUrl ?? DEFAULT_THUMBNAIL_URL,
+      status: "published",
+    })
     .select("id")
     .single();
 
@@ -52,6 +73,5 @@ export const publishArticle = async ({ title, content }: Article) => {
     throw new Error(error.message);
   }
 
-  // 출간 완료 후 해당 아티클 페이지로 이동합니다.
-  redirect(`/articles/${data.id}`);
+  redirect(`/article/${data.id}`);
 };
