@@ -1,6 +1,5 @@
 import ArticleCard from "@/components/article-card/index";
 import { createClient } from "@/utils/supabase/server";
-import type { EditorState } from "@hyeon1127/text-editor-kit";
 
 const FeedPage = async () => {
   const supabase = await createClient();

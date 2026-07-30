@@ -43,7 +43,6 @@ export const updateArticle = async ({
     throw new Error(error.message);
   }
 
-  revalidatePath("/");
   revalidatePath(`/article/${id}`); // 상세 페이지
 };
 
@@ -77,6 +76,5 @@ export const publishArticle = async ({
     throw new Error(error.message);
   }
 
-  revalidatePath("/");
-  redirect(`/articles/${data.id}`);
+  redirect(`/article/${data.id}`);
 };
