@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/thumbnail";
 import { createClient } from "@/utils/supabase/server";
 import type { EditorState } from "@hyeon1127/text-editor-kit";
@@ -41,6 +42,9 @@ export const updateArticle = async ({
   if (error != null) {
     throw new Error(error.message);
   }
+
+  revalidatePath("/");
+  revalidatePath(`/article/${id}`); // 상세 페이지
 };
 
 /**
@@ -73,5 +77,6 @@ export const publishArticle = async ({
     throw new Error(error.message);
   }
 
-  redirect(`/article/${data.id}`);
+  revalidatePath("/");
+  redirect(`/articles/${data.id}`);
 };

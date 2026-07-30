@@ -8,6 +8,7 @@ import { useDraft } from "@/hooks/draft/index";
 import { useEditorSave, STATUS_LABEL } from "@/hooks/editor/index";
 import { uploadArticleImage } from "@/utils/supabase/storage";
 import ThumbnailUpload from "../thumbnail/index";
+import { usePublish } from "@/hooks/publish/index";
 
 const Editor = dynamic(
   () => import("@hyeon1127/text-editor-kit").then((m) => m.Editor),
@@ -57,17 +58,14 @@ const EditorForm = ({
   const { draftModal, saveToLocal, handleRestore, handleIgnore, clearDraft } =
     useDraft({ isNewPost, onRestore: handleRestoreFromDraft });
 
-  const {
-    saveStatus,
-    publishing,
-    triggerAutoSave,
-    handleManualSave,
-    handlePublish,
-    clearTimer,
-  } = useEditorSave({
+  const { saveStatus, triggerAutoSave, handleManualSave, clearTimer } =
+    useEditorSave({
+      postId: initialPostId,
+      onSaveToLocal: saveToLocal,
+    });
+
+  const { publishing, handlePublish } = usePublish({
     postId: initialPostId,
-    isNewPost,
-    onSaveToLocal: saveToLocal,
     onClearDraft: clearDraft,
   });
 
@@ -118,9 +116,10 @@ const EditorForm = ({
 
             {/* 발행 */}
             <button
-              onClick={() =>
-                handlePublish(title, subtitle, content, thumbnailUrl)
-              }
+              onClick={() => {
+                clearTimer();
+                handlePublish(title, subtitle, content, thumbnailUrl);
+              }}
               disabled={publishing || !title.trim()}
               className="px-5 py-2 bg-blog-fg text-blog-bg text-xs font-semibold font-mono rounded-md disabled:opacity-40 hover:opacity-80 transition-opacity cursor-pointer"
             >
