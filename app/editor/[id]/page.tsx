@@ -27,8 +27,6 @@ const ModifyPage = async ({ params }: Props) => {
     notFound();
   }
 
-  console.log(post);
-
   return (
     <div className="max-w-195 mx-auto py-12 px-8">
       <EditorForm

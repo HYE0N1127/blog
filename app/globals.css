@@ -161,6 +161,11 @@
   --blog-border-strong: oklch(0.32 0 0); /* #3a3a3a  강조 구분선 */
 }
 
+.no-transitions,
+.no-transitions * {
+  transition: none !important;
+}
+
 @layer base {
   html {
     background-color: var(--blog-bg);

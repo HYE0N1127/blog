@@ -27,24 +27,22 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     return () => mediaQuery.removeEventListener("change", handler);
   }, [theme]);
 
-  const applyTheme = (t: Theme) => {
+  const applyTheme = (theme: Theme) => {
     document.documentElement.classList.add("no-transitions");
 
     const resolved: "light" | "dark" =
-      t === "system"
+      theme === "system"
         ? window.matchMedia("(prefers-color-scheme: dark)").matches
           ? "dark"
           : "light"
-        : t;
+        : theme;
 
     document.documentElement.classList.toggle("dark", resolved === "dark");
-    localStorage.setItem(THEME_STORAGE_KEY, t);
-    setThemeState(t);
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+    setThemeState(theme);
 
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        document.documentElement.classList.remove("no-transitions");
-      });
+      document.documentElement.classList.remove("no-transitions");
     });
   };
 
