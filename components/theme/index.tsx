@@ -1,9 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { ThemeContext } from "./contexts";
 import { THEME_STORAGE_KEY } from "@/constants/key";
 import { Theme } from "@/type/theme/index";
+
+const disableAnimation = () => {
+  const css = document.createElement("style");
+
+  css.appendChild(
+    document.createTextNode(
+      `*,*::before,*::after {
+        transition: none !important;
+      }`,
+    ),
+  );
+
+  document.head.appendChild(css);
+
+  return () => {
+    (() => window.getComputedStyle(document.body))();
+
+    setTimeout(() => {
+      document.head.removeChild(css);
+    }, 1);
+  };
+};
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setThemeState] = useState<Theme>("dark");
@@ -19,32 +41,32 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
     const handler = (e: MediaQueryListEvent) => {
       document.documentElement.classList.toggle("dark", e.matches);
     };
 
     mediaQuery.addEventListener("change", handler);
+
     return () => mediaQuery.removeEventListener("change", handler);
   }, [theme]);
 
-  const applyTheme = (theme: Theme) => {
-    document.documentElement.classList.add("no-transitions");
+  const applyTheme = useCallback((t: Theme) => {
+    const enable = disableAnimation();
 
     const resolved: "light" | "dark" =
-      theme === "system"
+      t === "system"
         ? window.matchMedia("(prefers-color-scheme: dark)").matches
           ? "dark"
           : "light"
-        : theme;
+        : t;
 
     document.documentElement.classList.toggle("dark", resolved === "dark");
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
-    setThemeState(theme);
+    localStorage.setItem(THEME_STORAGE_KEY, t);
+    setThemeState(t);
 
-    requestAnimationFrame(() => {
-      document.documentElement.classList.remove("no-transitions");
-    });
-  };
+    enable();
+  }, []);
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme: applyTheme }}>
