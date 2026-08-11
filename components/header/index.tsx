@@ -5,6 +5,38 @@ import { signInWithGithub } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import ProfileDropdown from "./dropdown/index";
 
+const LogoMark = () => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 512 512"
+    className="shrink-0 rounded-[5px] border border-blog-border-muted"
+  >
+    <rect width="512" height="512" fill="#0e0e0e" />
+    <text
+      x="178"
+      y="330"
+      fontFamily="var(--font-geist-mono), monospace"
+      fontWeight="800"
+      fontSize="248"
+      fill="currentColor"
+      className="text-blog-fg"
+      textAnchor="middle"
+    >
+      h
+    </text>
+    <rect
+      x="270"
+      y="298"
+      width="86"
+      height="34"
+      rx="3"
+      fill="currentColor"
+      className="text-blog-fg"
+    />
+  </svg>
+);
+
 const Header = async () => {
   const supabase = await createClient();
   const {
@@ -27,9 +59,12 @@ const Header = async () => {
         {/* 로고 */}
         <Link
           href="/"
-          className="text-sm font-bold tracking-tight text-blog-fg transition-colors hover:text-blog-fg-muted font-mono"
+          className="flex items-center gap-2 text-sm font-bold tracking-tight text-blog-fg transition-colors hover:text-blog-fg-muted font-mono"
         >
-          dev<span className="text-blog-fg-subtle">_</span>blog
+          <LogoMark />
+          <span>
+            h<span className="text-blog-fg-subtle mx-0.5">_</span>log
+          </span>
         </Link>
 
         {/* Auth */}
