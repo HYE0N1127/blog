@@ -5,7 +5,12 @@ import type { EditorState } from "@hyeon1127/text-editor-kit";
 
 const Viewer = dynamic(
   () => import("@hyeon1127/text-editor-kit").then((m) => m.Viewer),
-  { ssr: false },
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-96 rounded-lg bg-blog-bg-3 animate-pulse" />
+    ),
+  },
 );
 
 type Props = {
