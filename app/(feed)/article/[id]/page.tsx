@@ -1,3 +1,4 @@
+import type { Metadata, ResolvingMetadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Pencil } from "lucide-react";
@@ -8,6 +9,46 @@ import ArticleViewer from "@/components/viewer/index";
 type Props = {
   params: Promise<{ id: string }>;
 };
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const { id } = await params;
+  const supabase = await createClient();
+
+  const { data: article } = await supabase
+    .from("articles")
+    .select("title, subtitle, thumbnail_url")
+    .eq("id", id)
+    .eq("status", "published")
+    .single();
+
+  if (article == null) {
+    return {
+      title: "글을 찾을 수 없어요",
+    };
+  }
+
+  const previousImages = (await parent).openGraph?.images ?? [];
+  const ogImage = "/og-image.png";
+
+  return {
+    title: article.title,
+    description: article.subtitle ?? undefined,
+    openGraph: {
+      title: article.title,
+      description: article.subtitle ?? undefined,
+      images: [ogImage, ...previousImages],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.subtitle ?? undefined,
+      images: [ogImage],
+    },
+  };
+}
 
 const ArticlePage = async ({ params }: Props) => {
   const { id } = await params;

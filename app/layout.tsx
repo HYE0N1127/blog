@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://domain.com"), // TODO: 실제 배포 도메인으로 교체
   title: {
     default: "h_log",
-    template: "%s · h_log",
+    template: "%s",
   },
   description: "개발 과정에서 배운 것들을 기록하는 블로그입니다.",
   icons: {
