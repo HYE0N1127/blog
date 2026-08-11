@@ -1,14 +1,11 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/utils/supabase/server";
 import EditorForm from "@/components/editor/form/index";
+import { getCurrentUserWithAdminFlag } from "@/utils/supabase/admin";
 
 const EditPage = async () => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, isAdmin } = await getCurrentUserWithAdminFlag();
 
-  if (!user || user.email !== process.env.ADMIN_EMAIL) {
+  if (!user || !isAdmin) {
     redirect("/");
   }
 

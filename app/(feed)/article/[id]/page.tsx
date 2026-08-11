@@ -5,6 +5,7 @@ import { Pencil } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 import type { EditorState } from "@hyeon1127/text-editor-kit";
 import ArticleViewer from "@/components/viewer/index";
+import { getCurrentUserWithAdminFlag } from "@/utils/supabase/admin";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -53,12 +54,7 @@ export async function generateMetadata(
 const ArticlePage = async ({ params }: Props) => {
   const { id } = await params;
   const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const isAdmin = user?.email === process.env.ADMIN_EMAIL;
+  const { isAdmin } = await getCurrentUserWithAdminFlag();
 
   const { data: article } = await supabase
     .from("articles")

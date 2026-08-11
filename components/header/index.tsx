@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { signInWithGithub } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import ProfileDropdown from "./dropdown/index";
+import { getCurrentUserWithAdminFlag } from "@/utils/supabase/admin";
 
 const LogoMark = () => (
   <svg
@@ -38,10 +39,7 @@ const LogoMark = () => (
 );
 
 const Header = async () => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, isAdmin } = await getCurrentUserWithAdminFlag();
 
   const avatarUrl = user?.user_metadata?.avatar_url;
   const userName =
@@ -50,8 +48,6 @@ const Header = async () => {
     ? `@${user.user_metadata.user_name}`
     : userName;
   const fallback = userName.substring(0, 2).toUpperCase();
-
-  const isAdmin = user?.email === process.env.ADMIN_EMAIL;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-blog-border bg-blog-bg/80 backdrop-blur supports-backdrop-filter:bg-blog-bg/60 transition-colors">
