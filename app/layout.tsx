@@ -6,6 +6,34 @@ import Footer from "@/components/footer";
 import { THEME_STORAGE_KEY } from "@/constants/key";
 import { ThemeProvider } from "@/components/theme/index";
 
+export const metadata: Metadata = {
+  metadataBase: new URL("https://domain.com"), // TODO: 실제 배포 도메인으로 교체
+  title: {
+    default: "h_log",
+    template: "%s · h_log",
+  },
+  description: "개발 과정에서 배운 것들을 기록하는 블로그입니다.",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
+  openGraph: {
+    title: "h_log",
+    description: "개발 과정에서 배운 것들을 기록하는 블로그입니다.",
+    url: "/",
+    siteName: "h_log",
+    images: ["/og-image.png"],
+    locale: "ko_KR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "h_log",
+    description: "개발 과정에서 배운 것들을 기록하는 블로그입니다.",
+    images: ["/og-image.png"],
+  },
+};
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -15,11 +43,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-export const metadata: Metadata = {
-  title: "DevBlog",
-  description: "Frontend Engineering Blog",
-};
 
 export default function RootLayout({
   children,
