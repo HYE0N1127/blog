@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { ThemeContext } from "./contexts";
 import { THEME_STORAGE_KEY } from "@/constants/key";
-import { Theme } from "@/type/theme/index";
+import { Theme } from "@/type/theme";
 
 const disableAnimation = () => {
   const css = document.createElement("style");

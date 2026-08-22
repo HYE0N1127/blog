@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { FaGithub } from "react-icons/fa6";
-import { createClient } from "@/utils/supabase/server";
 import { signInWithGithub } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
-import ProfileDropdown from "./dropdown/index";
+import ProfileDropdown from "./dropdown";
 import { getCurrentUserWithAdminFlag } from "@/utils/supabase/admin";
 
 const LogoMark = () => (

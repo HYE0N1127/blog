@@ -4,9 +4,9 @@ import { notFound } from "next/navigation";
 import { Pencil } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 import type { EditorState } from "@hyeon1127/text-editor-kit";
-import ArticleViewer from "@/components/viewer/index";
+import ArticleViewer from "@/components/viewer";
 import { getCurrentUserWithAdminFlag } from "@/utils/supabase/admin";
-import { formatDate } from "@/utils/date/index";
+import { formatDate } from "@/utils/date";
 
 type Props = {
   params: Promise<{ id: string }>;

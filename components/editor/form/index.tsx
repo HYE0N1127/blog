@@ -3,12 +3,12 @@
 import { useState, useCallback, useEffect } from "react";
 import dynamic from "next/dynamic";
 import type { EditorState } from "@hyeon1127/text-editor-kit";
-import DraftModal, { Draft } from "../modal/index";
-import { useDraft } from "@/hooks/draft/index";
-import { useEditorSave, STATUS_LABEL } from "@/hooks/editor/index";
+import DraftModal, { Draft } from "../modal";
+import { useDraft } from "@/hooks/draft";
+import { useEditorSave, STATUS_LABEL } from "@/hooks/editor";
 import { uploadArticleImage } from "@/utils/supabase/storage";
-import ThumbnailUpload from "../thumbnail/index";
-import { usePublish } from "@/hooks/publish/index";
+import ThumbnailUpload from "../thumbnail";
+import { usePublish } from "@/hooks/publish";
 
 const Editor = dynamic(
   () => import("@hyeon1127/text-editor-kit").then((m) => m.Editor),

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import EditorForm from "@/components/editor/form/index";
+import EditorForm from "@/components/editor/form";
 import { getCurrentUserWithAdminFlag } from "@/utils/supabase/admin";
 
 const EditPage = async () => {

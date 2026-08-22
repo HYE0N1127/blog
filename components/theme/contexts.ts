@@ -1,6 +1,6 @@
 "use client";
 
-import { Theme } from "@/type/theme/index";
+import { Theme } from "@/type/theme";
 import { createContext } from "react";
 
 type ThemeContextType = {

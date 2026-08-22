@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { FaGithub } from "react-icons/fa6";
-import ThemeSwitcher from "./switcher/index";
+import ThemeSwitcher from "./switcher";
 
 const Footer = () => {
   return (

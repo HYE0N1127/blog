@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/thumbnail";
-import { formatDate } from "@/utils/date/index";
+import { formatDate } from "@/utils/date";
 
 type Props = {
   id: string;

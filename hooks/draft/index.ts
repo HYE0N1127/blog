@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import type { EditorState } from "@hyeon1127/text-editor-kit";
 import { DRAFT_STORAGE_KEY } from "@/constants/key";
-import { Draft } from "@/components/editor/modal/index";
+import { Draft } from "@/components/editor/modal";
 
 type UseDraftProps = {
   isNewPost: boolean;

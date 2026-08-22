@@ -2,7 +2,7 @@ import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { getCurrentUserWithAdminFlag } from "@/utils/supabase/admin";
 import type { EditorState } from "@hyeon1127/text-editor-kit";
-import EditorForm from "@/components/editor/form/index";
+import EditorForm from "@/components/editor/form";
 
 type Props = { params: Promise<{ id: string }> };
 

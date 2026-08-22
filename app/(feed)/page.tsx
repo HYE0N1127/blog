@@ -1,4 +1,4 @@
-import ArticleCard from "@/components/article-card/index";
+import ArticleCard from "@/components/article-card";
 import { createClient } from "@/utils/supabase/server";
 
 const FeedPage = async () => {

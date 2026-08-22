@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Sun, Monitor, Moon } from "lucide-react";
-import { Theme } from "@/type/theme/index";
+import { Theme } from "@/type/theme";
 import { useTheme } from "@/components/theme/hooks";
 
 const THEMES: { value: Theme; icon: React.ReactNode; label: string }[] = [
