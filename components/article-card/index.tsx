@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/thumbnail";
+import { formatDate } from "@/utils/date/index";
 
 type Props = {
   id: string;
@@ -17,11 +18,7 @@ const ArticleCard = ({
   thumbnailUrl,
   createdAt,
 }: Props) => {
-  const formattedDate = new Date(createdAt).toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const formattedDate = formatDate(createdAt);
 
   return (
     <Link

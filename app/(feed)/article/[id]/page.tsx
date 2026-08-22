@@ -6,6 +6,7 @@ import { createClient } from "@/utils/supabase/server";
 import type { EditorState } from "@hyeon1127/text-editor-kit";
 import ArticleViewer from "@/components/viewer/index";
 import { getCurrentUserWithAdminFlag } from "@/utils/supabase/admin";
+import { formatDate } from "@/utils/date/index";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -54,6 +55,7 @@ export async function generateMetadata(
 const ArticlePage = async ({ params }: Props) => {
   const { id } = await params;
   const supabase = await createClient();
+
   const { isAdmin } = await getCurrentUserWithAdminFlag();
 
   const { data: article } = await supabase
@@ -67,14 +69,7 @@ const ArticlePage = async ({ params }: Props) => {
     notFound();
   }
 
-  const formattedDate = new Date(article.created_at).toLocaleDateString(
-    "ko-KR",
-    {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    },
-  );
+  const formattedDate = formatDate(article.created_at);
 
   return (
     <article className="max-w-190 mx-auto py-12 px-8">
