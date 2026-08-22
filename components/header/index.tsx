@@ -10,9 +10,8 @@ const LogoMark = () => (
     width="20"
     height="20"
     viewBox="0 0 512 512"
-    className="shrink-0 rounded-[5px] border border-blog-border-muted"
+    className="shrink-0 rounded-[5px] border border-blog-border-muted text-blog-fg"
   >
-    <rect width="512" height="512" fill="#0e0e0e" />
     <text
       x="178"
       y="330"
@@ -20,20 +19,11 @@ const LogoMark = () => (
       fontWeight="800"
       fontSize="248"
       fill="currentColor"
-      className="text-blog-fg"
       textAnchor="middle"
     >
       h
     </text>
-    <rect
-      x="270"
-      y="298"
-      width="86"
-      height="34"
-      rx="3"
-      fill="currentColor"
-      className="text-blog-fg"
-    />
+    <rect x="270" y="298" width="86" height="34" rx="3" fill="currentColor" />
   </svg>
 );
 
