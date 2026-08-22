@@ -28,6 +28,13 @@ type Props = {
   initialThumbnailUrl?: string;
 };
 
+type ArticleFormState = {
+  title: string;
+  subtitle: string;
+  content: EditorState | undefined;
+  thumbnailUrl: string | undefined;
+};
+
 const EditorForm = ({
   postId: initialPostId,
   initialTitle = "",
@@ -37,26 +44,27 @@ const EditorForm = ({
 }: Props) => {
   const isNewPost = !initialPostId;
 
-  const [title, setTitle] = useState(initialTitle);
-  const [subtitle, setSubtitle] = useState(initialSubtitle);
-  const [content, setContent] = useState<EditorState | undefined>(
-    initialContent,
-  );
-  const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>(
-    initialThumbnailUrl,
-  );
+  const [form, setForm] = useState<ArticleFormState>({
+    title: initialTitle,
+    subtitle: initialSubtitle,
+    content: initialContent,
+    thumbnailUrl: initialThumbnailUrl,
+  });
   const [editorKey, setEditorKey] = useState(0);
 
-  const handleRestoreFromDraft = useCallback((draft: Draft) => {
-    setTitle(draft.title);
-    setSubtitle(draft.subtitle);
-    setContent(draft.content);
-    setThumbnailUrl(draft.thumbnailUrl);
-    setEditorKey((key) => key + 1);
-  }, []);
-
   const { draftModal, saveToLocal, handleRestore, handleIgnore, clearDraft } =
-    useDraft({ isNewPost, onRestore: handleRestoreFromDraft });
+    useDraft({
+      isNewPost,
+      onRestore: (draft: Draft) => {
+        setForm({
+          title: draft.title,
+          subtitle: draft.subtitle,
+          content: draft.content,
+          thumbnailUrl: draft.thumbnailUrl,
+        });
+        setEditorKey((key) => key + 1);
+      },
+    });
 
   const { saveStatus, triggerAutoSave, handleManualSave, clearTimer } =
     useEditorSave({
@@ -69,17 +77,31 @@ const EditorForm = ({
     onClearDraft: clearDraft,
   });
 
-  // initialContent가 늦게 도착하는 경우 동기화 (편집 페이지)
+  const updateForm = useCallback(
+    (patch: Partial<ArticleFormState>) => {
+      setForm((prev) => {
+        const next = { ...prev, ...patch };
+        triggerAutoSave(
+          next.title,
+          next.subtitle,
+          next.content,
+          next.thumbnailUrl,
+        );
+        return next;
+      });
+    },
+    [triggerAutoSave],
+  );
+
   useEffect(() => {
     if (initialContent === undefined) {
       return;
     }
 
-    setContent(initialContent);
+    setForm((prev) => ({ ...prev, content: initialContent }));
     setEditorKey((key) => key + 1);
   }, [initialContent]);
 
-  // 언마운트 시 타이머 정리
   useEffect(() => {
     return clearTimer;
   }, [clearTimer]);
@@ -106,9 +128,14 @@ const EditorForm = ({
             {/* 수동 임시저장 */}
             <button
               onClick={() =>
-                handleManualSave(title, subtitle, content, thumbnailUrl)
+                handleManualSave(
+                  form.title,
+                  form.subtitle,
+                  form.content,
+                  form.thumbnailUrl,
+                )
               }
-              disabled={saveStatus === "saving" || !title.trim()}
+              disabled={saveStatus === "saving" || !form.title.trim()}
               className="px-4 py-2 border border-blog-border-muted bg-blog-bg text-blog-fg-muted text-xs font-semibold font-mono rounded-md disabled:opacity-40 hover:bg-blog-bg-3 hover:text-blog-fg transition-colors cursor-pointer"
             >
               임시저장
@@ -118,9 +145,14 @@ const EditorForm = ({
             <button
               onClick={() => {
                 clearTimer();
-                handlePublish(title, subtitle, content, thumbnailUrl);
+                handlePublish(
+                  form.title,
+                  form.subtitle,
+                  form.content,
+                  form.thumbnailUrl,
+                );
               }}
-              disabled={publishing || !title.trim()}
+              disabled={publishing || !form.title.trim()}
               className="px-5 py-2 bg-blog-fg text-blog-bg text-xs font-semibold font-mono rounded-md disabled:opacity-40 hover:opacity-80 transition-opacity cursor-pointer"
             >
               {publishing ? "발행 중..." : "발행"}
@@ -131,11 +163,8 @@ const EditorForm = ({
         {/* 제목 */}
         <input
           type="text"
-          value={title}
-          onChange={(e) => {
-            setTitle(e.target.value);
-            triggerAutoSave(e.target.value, subtitle, content, thumbnailUrl);
-          }}
+          value={form.title}
+          onChange={(e) => updateForm({ title: e.target.value })}
           placeholder="제목을 입력하세요"
           className="w-full bg-transparent text-3xl font-bold text-blog-fg placeholder:text-blog-fg-subtle outline-none border-b border-blog-border pb-4 font-mono"
         />
@@ -143,33 +172,24 @@ const EditorForm = ({
         {/* 부제목 */}
         <input
           type="text"
-          value={subtitle}
-          onChange={(e) => {
-            setSubtitle(e.target.value);
-            triggerAutoSave(title, e.target.value, content, thumbnailUrl);
-          }}
+          value={form.subtitle}
+          onChange={(e) => updateForm({ subtitle: e.target.value })}
           placeholder="부제목을 입력하세요 (선택)"
           className="w-full bg-transparent text-sm text-blog-fg-muted placeholder:text-blog-fg-subtle outline-none font-mono"
         />
 
         {/* 썸네일 업로드 */}
         <ThumbnailUpload
-          value={thumbnailUrl}
-          onChange={(url) => {
-            setThumbnailUrl(url);
-            triggerAutoSave(title, subtitle, content, url);
-          }}
+          value={form.thumbnailUrl}
+          onChange={(url) => updateForm({ thumbnailUrl: url })}
         />
 
         {/* 에디터 — key로 재마운트 제어 */}
-        {!initialPostId || content !== undefined ? (
+        {!initialPostId || form.content !== undefined ? (
           <Editor
             key={editorKey}
-            initialData={content}
-            onChange={(data) => {
-              setContent(data);
-              triggerAutoSave(title, subtitle, data, thumbnailUrl);
-            }}
+            initialData={form.content}
+            onChange={(data) => updateForm({ content: data })}
             onImageUpload={uploadArticleImage}
           />
         ) : (
