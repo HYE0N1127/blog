@@ -9,8 +9,6 @@ export const getCurrentUserWithAdminFlag = cache(async () => {
     data: { user },
   } = await supabase.auth.getUser();
 
-  console.log(`getUser: ${Date.now() - start}ms`);
-
   if (!user) {
     return { user: null, isAdmin: false };
   }
@@ -21,8 +19,6 @@ export const getCurrentUserWithAdminFlag = cache(async () => {
     .select("is_admin")
     .eq("id", user.id)
     .single();
-
-  console.log(`profile query: ${Date.now() - profileStart}ms`);
 
   return { user, isAdmin: profile?.is_admin ?? false };
 });
