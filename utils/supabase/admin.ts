@@ -1,13 +1,14 @@
+import { cache } from "react";
 import { createClient } from "@/utils/supabase/server";
 
-export const getCurrentUserWithAdminFlag = async () => {
+export const getCurrentUserWithAdminFlag = cache(async () => {
   const supabase = await createClient();
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user == null) {
+  if (!user) {
     return { user: null, isAdmin: false };
   }
 
@@ -18,4 +19,4 @@ export const getCurrentUserWithAdminFlag = async () => {
     .single();
 
   return { user, isAdmin: profile?.is_admin ?? false };
-};
+});
