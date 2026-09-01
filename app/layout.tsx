@@ -5,6 +5,7 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { THEME_STORAGE_KEY } from "@/constants/key";
 import { ThemeProvider } from "@/components/theme";
+import "@hyeon1127/text-editor-kit/dist/style.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://domain.com"), // TODO: 실제 배포 도메인으로 교체
